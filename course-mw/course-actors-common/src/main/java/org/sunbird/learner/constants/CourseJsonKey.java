@@ -27,5 +27,14 @@ public abstract class CourseJsonKey {
   public static final String ASSESMENT_CRITERIA = "ge, le, eq";
   public static final String SUNBIRD_SEND_EMAIL_NOTIFICATION_API =
       "sunbird_send_email_notifictaion_api";
+  public static final String CONTENT_STATUS="contentStatus";
+  public static final String SECONDS= "seconds";
+  public static final String M_TOTAL_TS="m_total_ts";
+  public static final String AVG_TIME_COURSE_COMPLETED="avg_time_course_completed";
+  public static final String USER_COUNT="user_count";
+  public static final String BUCKETS = "buckets";
+  public static final String ENROLLED_USER_LIST="List of users enrolled for the course";
+  public static final String ERROR="Error occurred";
+  public static final String GET_PAGE_DATA="getPageData";
   public static final String NOTIFY_TEMPLATE="notifyTemplate";
 }
