@@ -17,14 +17,19 @@ import org.sunbird.common.models.util.*;
 import org.sunbird.common.request.Request;
 import play.mvc.Http;
 import play.mvc.Result;
+import util.SignalHandler;
+import org.apache.log4j.Logger;
+import org.sunbird.common.exception.ProjectCommonException;
+import org.sunbird.common.responsecode.ResponseCode;
 
 /** @author Manzarul */
 public class HealthController extends BaseController {
   private static List<String> list = new ArrayList<>();
-
   @Inject
   @Named("health-actor")
   private ActorRef healthActorRef;
+
+  @Inject SignalHandler signalHandler;
 
   static {
     list.add("service");
@@ -41,6 +46,7 @@ public class HealthController extends BaseController {
    */
   public CompletionStage<Result> getHealth(Http.Request httpRequest) {
     try {
+      handleSigTerm();
       Request reqObj = new Request();
       reqObj.setOperation(ActorOperations.HEALTH_CHECK.getValue());
       reqObj.setRequestId(httpRequest.flash().get(JsonKey.REQUEST_ID));
@@ -52,7 +58,15 @@ public class HealthController extends BaseController {
       return CompletableFuture.completedFuture(createCommonExceptionResponse(e, httpRequest));
     }
   }
-
+  private void handleSigTerm() throws RuntimeException {
+    if (signalHandler.isShuttingDown()) {
+      ProjectLogger.log( "Application is shutting down, cant accept new request.", LoggerEnum.INFO);
+      throw new ProjectCommonException(
+              ResponseCode.serviceUnAvailable.getErrorCode(),
+              ResponseCode.serviceUnAvailable.getErrorMessage(),
+              ResponseCode.SERVICE_UNAVAILABLE.getResponseCode());
+    }
+  }
   /**
    * This method will do the health check for play service.
    *
@@ -71,7 +85,13 @@ public class HealthController extends BaseController {
     response.setId("learner.service.health.api");
     response.setVer(getApiVersion(httpRequest.path()));
     response.setTs(httpRequest.flash().get(JsonKey.REQUEST_ID));
-    return CompletableFuture.completedFuture(ok(play.libs.Json.toJson(response)));
+    try {
+      handleSigTerm();
+      return CompletableFuture.completedFuture(ok(play.libs.Json.toJson(response)));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return CompletableFuture.completedFuture(createCommonExceptionResponse(e, httpRequest));
+    }
   }
 
 }
