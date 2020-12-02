@@ -144,7 +144,6 @@ class CourseEnrolmentTest extends FlatSpec with Matchers with MockFactory {
         userCourse.setCourseId("do_11305605610466508811")
         userCourse.setBatchId("0130598559365038081")
         (userDao.listEnrolments(_: RequestContext, _: String)).expects(*,*).returns(getEnrolmentLists())
-        ((activityType: _root_.scala.Predef.String, userId: _root_.java.util.List[_root_.scala.Predef.String], activityIds: _root_.java.util.List[_root_.scala.Predef.String], requestContext: RequestContext) => groupDao.readEntries(activityType, userId, activityIds, requestContext)).expects(*, *, *, *).returns(getReadEntriesResponse)
             val response = callActor(getListEnrolRequest(), Props(new CourseEnrolmentActor(null)(cacheUtil).setDao(courseDao, userDao, groupDao)))
         println(response)
         assert(null != response)
@@ -170,7 +169,6 @@ class CourseEnrolmentTest extends FlatSpec with Matchers with MockFactory {
         userCourse.setBatchId("0130598559365038081")
         (cacheUtil.get(_: String, _: String => String, _: Int)).expects(*, *, *).returns(null)
         (userDao.listEnrolments(_: RequestContext, _: String)).expects(*, *).returns(getEnrolmentLists())
-        ((activityType: _root_.scala.Predef.String, userId: _root_.java.util.List[_root_.scala.Predef.String], activityIds: _root_.java.util.List[_root_.scala.Predef.String], requestContext: RequestContext) => groupDao.readEntries(activityType, userId, activityIds, requestContext)).expects(*, *, *, *).returns(getReadEntriesResponse)
         (cacheUtil.set(_: String, _: String, _: Int)).expects(*, *, *).once()
         val request = getListEnrolRequest()
         request.getContext.put("cache", true.asInstanceOf[AnyRef])
@@ -261,7 +259,7 @@ class CourseEnrolmentTest extends FlatSpec with Matchers with MockFactory {
 
 
     def getEnrolmentLists(): java.util.List[java.util.Map[String, AnyRef]] = {
-        val enrolmentString = "[{\"dateTime\":1594219912979,\"lastReadContentStatus\":2,\"completionpercentage\":100,\"enrolledDate\":\"1594219912979\",\"addedBy\":\"6cf06951-55fe-2a81-4e37-4475428ece80\",\"delta\":null,\"active\":true,\"contentstatus\":{\"do_11305605610466508811\":2},\"batchId\":\"0130598559365038081\",\"userId\":\"95e4942d-cbe8-477d-aebd-ad8e6de4bfc8\",\"certificates\":[],\"completedOn\":1595422618082,\"grade\":null,\"progress\":1,\"lastReadContentId\":\"do_11305605610466508811\",\"courseId\":\"do_11305984881537024012255\",\"status\":2}]"
+        val enrolmentString = "[{\"dateTime\":1594219912979,\"lastReadContentStatus\":2,\"completionpercentage\":100,\"enrolledDate\":\"1594219912979\",\"addedBy\":\"6cf06951-55fe-2a81-4e37-4475428ece80\",\"delta\":null,\"active\":true,\"contentstatus\":{\"do_11305605610466508811\":2},\"batchId\":\"0130598559365038081\",\"userId\":\"95e4942d-cbe8-477d-aebd-ad8e6de4bfc8\",\"certificates\":[],\"completedOn\":1595422618082,\"grade\":null,\"progress\":1,\"lastReadContentId\":\"do_11305605610466508811\",\"courseId\":\"do_11305984881537024012255\",\"status\":2,\"leafNodesCount\":1}]"
         mapper.readValue(enrolmentString, classOf[java.util.List[java.util.Map[String, AnyRef]]])
     }
 
